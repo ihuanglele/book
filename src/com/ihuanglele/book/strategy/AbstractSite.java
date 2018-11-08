@@ -1,10 +1,12 @@
 package com.ihuanglele.book.strategy;
 
+import com.ihuanglele.book.exception.PageErrorException;
 import com.ihuanglele.book.exception.StopException;
 import com.ihuanglele.book.page.Article;
 import com.ihuanglele.book.page.Book;
 import com.ihuanglele.book.page.Chapter;
 import com.ihuanglele.book.util.GetHtmlPage;
+import com.ihuanglele.book.util.Tool;
 import okhttp3.Response;
 
 /**
@@ -49,12 +51,16 @@ public abstract class AbstractSite {
 
     protected abstract String getArticleUrl(String url);
 
-    protected abstract Book getBookPage(Response response);
+    protected abstract Book getBookPage(Response response) throws PageErrorException;
 
     protected abstract Chapter getChapterPage(Response response);
 
     protected abstract Article getArticlePage(Response response);
 
     protected abstract Boolean isStop();
+
+    protected boolean checkResponse(Response response){
+        return response.isSuccessful();
+    }
 
 }

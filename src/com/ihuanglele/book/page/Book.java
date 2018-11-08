@@ -1,5 +1,7 @@
 package com.ihuanglele.book.page;
 
+import org.jsoup.nodes.Document;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -14,6 +16,16 @@ public class Book {
     private String author;
     private String desc;
     private String album;
+
+    public Document getDocument() {
+        return document;
+    }
+
+    public void setDocument(Document document) {
+        this.document = document;
+    }
+
+    private Document document;
 
     private String id;
     private Chapter chapter;

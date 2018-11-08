@@ -3,7 +3,6 @@ import com.ihuanglele.book.store.FileStore;
 import com.ihuanglele.book.store.IStore;
 import com.ihuanglele.book.strategy.AbstractSite;
 import com.ihuanglele.book.strategy.QisuuLa;
-import com.ihuanglele.book.util.GetHtmlPage;
 
 public class Main {
 
@@ -13,6 +12,7 @@ public class Main {
         Runner runner = new Runner();
         runner.setSite(site);
         runner.setStore(store);
+        runner.setStart("44216");
         runner.run();
     }
 
