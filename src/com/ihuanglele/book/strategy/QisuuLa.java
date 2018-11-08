@@ -8,6 +8,7 @@ import com.ihuanglele.book.util.Tool;
 import okhttp3.Response;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
 import java.io.IOException;
 
@@ -23,9 +24,7 @@ public class QisuuLa extends AbstractSite {
     }
 
     protected String getChapterUrl() {
-        Tool.log(getBook());
-        return "";
-//        return this.getPageUrl(getBook().getId());
+        return this.getPageUrl(getBook().getId());
     }
 
     protected String getArticleUrl(String chapterId) {
@@ -40,8 +39,11 @@ public class QisuuLa extends AbstractSite {
         try {
             Document document = Jsoup.parse(response.body().string());
             book.setDocument(document);
-            book.setTitle(document.select(".info_des > h1").first().text());
-            Tool.log(book.getTitle());
+            Element infoDesc = document.selectFirst(".info_des");
+            book.setTitle(infoDesc.getElementsByTag("h1").first().text());
+            book.setAuthor(infoDesc.getElementsByTag("dl").first().text());
+            book.setDesc(infoDesc.selectFirst(".intro").text());
+            book.setAlbum(document.selectFirst(".tupian img").attr("src"));
             return book;
         } catch (IOException e) {
             e.printStackTrace();
