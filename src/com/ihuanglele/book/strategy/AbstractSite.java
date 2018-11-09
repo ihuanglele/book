@@ -59,13 +59,18 @@ public abstract class AbstractSite {
         Response response = page.setMobile(isMobile).getPage(getPageUrl(bookId));
         this.book = getBookPage(response);
         book.setId(bookId);
+        response.close();
 
-        Chapter chapter = getChapterPage(page.getPage(getChapterUrl()));
+        Response chapterRes = page.getPage(getChapterUrl());
+        Chapter chapter = getChapterPage(chapterRes);
         book.setChapter(chapter);
+        chapterRes.close();
 
         ArrayList<Article> articles = new ArrayList<>();
         for (Chapter.Link link : chapter.getLinks()){
-            Article article = getArticlePage(page.getPage(link.getHref()));
+            Response articleRes = page.getPage(link.getHref());
+            Article article = getArticlePage(articleRes);
+            articleRes.close();
             if(null == article.getChapterNo()){
                 article.setChapterNo(link.getChapterNo());
             }
