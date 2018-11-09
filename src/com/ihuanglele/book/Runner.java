@@ -33,7 +33,7 @@ public class Runner {
                 isRun = false;
             } catch (PageErrorException e) {
                 e.printStackTrace();
-                isRun = true;
+                start = site.getNextPageId();
             }
         }
     }
