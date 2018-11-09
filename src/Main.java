@@ -12,7 +12,7 @@ class Main {
         Runner runner = new Runner();
         runner.setSite(site);
         runner.setStore(store);
-        runner.setStart("6");
+        runner.setStart("1");
         runner.run();
     }
 
