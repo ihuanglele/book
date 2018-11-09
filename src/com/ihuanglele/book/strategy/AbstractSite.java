@@ -41,7 +41,7 @@ public abstract class AbstractSite {
      * @return 地址ID
      */
     public String getNextPageId() {
-        Integer id = Integer.valueOf(book.getId()) + 1;
+        Integer id = Integer.valueOf(bookId) + 1;
         return String.valueOf(id);
     }
 

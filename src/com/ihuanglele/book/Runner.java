@@ -4,6 +4,7 @@ import com.ihuanglele.book.exception.PageErrorException;
 import com.ihuanglele.book.exception.StopException;
 import com.ihuanglele.book.store.IStore;
 import com.ihuanglele.book.strategy.AbstractSite;
+import com.ihuanglele.book.util.Tool;
 
 /**
  * Created by ihuanglele on 2018/11/8.
@@ -32,8 +33,10 @@ public class Runner {
                 e.printStackTrace();
                 isRun = false;
             } catch (PageErrorException e) {
-                e.printStackTrace();
+//                e.printStackTrace();
+                Tool.log(start + "保存失败"+e.getMessage());
                 start = site.getNextPageId();
+                isRun = true;
             }
         }
     }
