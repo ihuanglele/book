@@ -17,4 +17,9 @@ public class GetExample {
         String r = response.body().string();
         System.out.println(r);
     }
+
+    static {
+        System.out.println("static block");
+    }
+
 }

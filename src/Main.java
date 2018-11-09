@@ -7,13 +7,18 @@ import com.ihuanglele.book.strategy.QisuuLa;
 public class Main {
 
     public static void main(String[] args) {
-        AbstractSite site = new QisuuLa();
-        IStore store = new FileStore();
-        Runner runner = new Runner();
-        runner.setSite(site);
-        runner.setStore(store);
-        runner.setStart("1");
-        runner.run();
+//        AbstractSite site = new QisuuLa();
+//        IStore store = new FileStore();
+//        Runner runner = new Runner();
+//        runner.setSite(site);
+//        runner.setStore(store);
+//        runner.setStart("1");
+//        runner.run();
+
+        new GetExample();
+        new GetExample();
+        new GetExample();
+
     }
 
 }
