@@ -19,6 +19,7 @@ import java.util.ArrayList;
 /**
  * Created by ihuanglele on 2018/11/8.
  */
+@SuppressWarnings("ALL")
 public abstract class AbstractSite {
 
     private Book book;
@@ -36,6 +37,11 @@ public abstract class AbstractSite {
 
     private IStore store;
 
+
+    private void clean() {
+        book = null;
+    }
+
     /**
      * 获取下一本书的地址ID
      * @return 地址ID
@@ -51,6 +57,7 @@ public abstract class AbstractSite {
      * @throws StopException
      */
     public final void start(String bookId) throws PageErrorException,StopException {
+        this.clean();
         this.bookId = bookId;
         if(!isStop()){
             throw new StopException("stop crawl");

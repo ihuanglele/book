@@ -30,11 +30,12 @@ public class Runner {
                 site.start(start);
                 start = site.getNextPageId();
             }catch (StopException e){
-                e.printStackTrace();
+//                e.printStackTrace();
+                Tool.log("Stop");
                 isRun = false;
             } catch (PageErrorException e) {
 //                e.printStackTrace();
-                Tool.log(start + " :保存失败 ->"+e.getMessage());
+                Tool.log(start + " :保存失败 -> " + e.getMessage());
                 start = site.getNextPageId();
                 isRun = true;
             }

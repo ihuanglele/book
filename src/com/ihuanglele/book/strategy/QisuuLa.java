@@ -4,19 +4,17 @@ import com.ihuanglele.book.exception.PageErrorException;
 import com.ihuanglele.book.page.Article;
 import com.ihuanglele.book.page.Book;
 import com.ihuanglele.book.page.Chapter;
-import com.ihuanglele.book.util.Tool;
 import okhttp3.Response;
 import org.jsoup.nodes.Element;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 
 /**
  * Created by ihuanglele on 2018/11/8.
  */
 public class QisuuLa extends AbstractSite {
 
-    private static String domain =  "https://www.qisuu.la/";
+    private static final String domain = "https://www.qisuu.la/";
 
     protected String getPageUrl(String bookId) {
         return domain+"du/1/"+bookId;
@@ -65,7 +63,7 @@ public class QisuuLa extends AbstractSite {
     }
 
     protected Boolean isStop() {
-        return Integer.valueOf(bookId) <= 29599;
+        return Integer.valueOf(bookId) <= 10;
     }
 
 
