@@ -34,7 +34,9 @@ public class QisuuLa extends AbstractSite {
         Book book = super.getBookPage(response);
         Element infoDesc = book.getDocument().selectFirst(".info_des");
         book.setTitle(infoDesc.getElementsByTag("h1").first().text());
-        book.setAuthor(infoDesc.getElementsByTag("dl").first().text());
+        String author = infoDesc.getElementsByTag("dl").first().text();
+        author = author.replace("作&nbsp;&nbsp;者：","");
+        book.setAuthor(author);
         book.setDesc(infoDesc.selectFirst(".intro").text());
         String imgUri = book.getDocument()
                 .selectFirst(".tupian img").attr("src");
