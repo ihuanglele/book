@@ -2,6 +2,7 @@ package com.ihuanglele.book.page;
 
 import org.jsoup.nodes.Document;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -29,7 +30,7 @@ public class Book {
 
     private String id;
     private Chapter chapter;
-    private HashSet<Article> articles;
+    private ArrayList<Article> articles;
 
     public Chapter getChapter() {
         return chapter;
@@ -40,11 +41,11 @@ public class Book {
         this.chapter = chapter;
     }
 
-    public HashSet<Article> getArticles() {
+    public ArrayList<Article> getArticles() {
         return articles;
     }
 
-    public void setArticles(HashSet<Article> articles) {
+    public void setArticles(ArrayList<Article> articles) {
         this.articles = articles;
     }
 

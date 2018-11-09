@@ -1,5 +1,8 @@
 package com.ihuanglele.book.page;
 
+import org.jsoup.nodes.Document;
+
+import java.util.ArrayList;
 import java.util.HashSet;
 
 /**
@@ -43,7 +46,20 @@ public class Chapter {
         }
     }
 
+    // 章节页面地址
     private String url;
+    // 章节 链接 Set
+    private ArrayList<Link> links;
+    // 页面 Document 对象
+    private Document document;
+
+    public Document getDocument() {
+        return document;
+    }
+
+    public void setDocument(Document document) {
+        this.document = document;
+    }
 
     public String getUrl() {
         return url;
@@ -53,13 +69,11 @@ public class Chapter {
         this.url = url;
     }
 
-    public HashSet<Link> getLinks() {
+    public ArrayList<Link> getLinks() {
         return links;
     }
 
-    public void setLinks(HashSet<Link> links) {
+    public void setLinks(ArrayList<Link> links) {
         this.links = links;
     }
-
-    private HashSet<Link> links;
 }

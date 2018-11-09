@@ -48,9 +48,10 @@ public class GetHtmlPage {
             if(response.isSuccessful()){
                 return response;
             }else {
-                throw new PageErrorException();
+                throw new PageErrorException("response：ERROR -> "+ url + response.message());
             }
         } catch (IOException e) {
+            e.printStackTrace();
             throw new PageErrorException();
         }
     }

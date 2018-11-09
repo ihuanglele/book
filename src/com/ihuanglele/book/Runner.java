@@ -22,11 +22,10 @@ public class Runner {
 
     public void run() {
         try{
+            site.setStore(store);
             site.start(start);
         }catch (StopException e){
             e.printStackTrace();
-        }finally {
-            store.save(site.getBook());
         }
     }
 
