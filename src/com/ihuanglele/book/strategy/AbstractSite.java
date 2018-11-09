@@ -95,10 +95,15 @@ public abstract class AbstractSite {
             }).start();
         }
 
-        while (articles.size() != chapter.getLinks().size()) {
+        Integer t = 0;
+        // 最多等待 5s
+        Integer max = (int) (chapter.getLinks().size() * 0.02) + 3;
+        while (articles.size() != chapter.getLinks().size() && t <= max) {
             try {
                 sleep(1000);
-//                Tool.log(articles.size() + "<-articles  links->" + chapter.getLinks().size());
+                Tool.log(articles.size() + "<-articles  links->" + chapter.getLinks().size());
+                t++;
+                Tool.log(t);
             } catch (InterruptedException e) {
 //                e.printStackTrace();
             }
