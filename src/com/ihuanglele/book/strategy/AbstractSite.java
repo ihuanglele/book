@@ -16,6 +16,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
+import static java.lang.Thread.sleep;
+
 /**
  * Created by ihuanglele on 2018/11/8.
  */
@@ -71,19 +73,41 @@ public abstract class AbstractSite {
         book.setChapter(chapter);
 
         ArrayList<Article> articles = new ArrayList<>();
+
         for (Chapter.Link link : chapter.getLinks()){
-            Article article = getArticlePage(page.getPage(link.getHref()));
-            if(null == article.getChapterNo()){
-                article.setChapterNo(link.getChapterNo());
+            (new Thread() {
+                @Override
+                public void run() {
+                    Article article = null;
+                    try {
+                        article = getArticlePage(page.getPage(link.getHref()));
+                    } catch (PageErrorException e) {
+                        e.printStackTrace();
+                    }
+                    if (null == article.getChapterNo()) {
+                        article.setChapterNo(link.getChapterNo());
+                    }
+                    if (null == article.getTitle()) {
+                        article.setTitle(link.getTitle());
+                    }
+                    articles.add(article);
+                }
+            }).start();
+        }
+
+        while (articles.size() != chapter.getLinks().size()) {
+            try {
+                sleep(1000);
+                Tool.log(articles.size() + "<-articles  links->" + chapter.getLinks().size());
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
-            if(null == article.getTitle()){
-                article.setTitle(link.getTitle());
-            }
-            articles.add(article);
         }
         book.setArticles(articles);
+        Tool.log(articles.size());
+
         store.save(book);
-        Tool.log("saved Book" + bookId);
+        Tool.save("saved Book" + bookId, "bookSave");
     }
 
 

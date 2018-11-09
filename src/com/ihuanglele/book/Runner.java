@@ -40,6 +40,7 @@ public class Runner {
                 isRun = true;
             }
         }
+        Tool.closeFileWriter();
     }
 
     public String getStart() {
