@@ -32,12 +32,12 @@ public class GetHtmlPage {
         return this;
     }
 
-    public Response getPage(String url) throws StopException {
+    public Response getPage(String url) throws PageErrorException {
         this.url = url;
         return this.request();
     }
 
-    private Response request() throws StopException {
+    private Response request() throws PageErrorException {
         Request request = new Request.Builder()
                 .url(url)
                 .addHeader("User-Agent",isMobile ? GetHtmlPage.mobileAgent : GetHtmlPage.pcAgent)

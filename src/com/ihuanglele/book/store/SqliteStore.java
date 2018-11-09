@@ -7,6 +7,7 @@ import com.ihuanglele.book.page.Book;
 import com.ihuanglele.book.util.Tool;
 import org.orman.dbms.Database;
 import org.orman.dbms.sqlite.SQLite;
+import org.orman.mapper.MappingConfiguration;
 import org.orman.mapper.MappingSession;
 
 import java.sql.Connection;
@@ -22,6 +23,8 @@ public class SqliteStore implements IStore {
     static {
         Database db = new SQLite("db/db.sqlite");
         MappingSession.registerDatabase(db);
+        MappingConfiguration configuration = new MappingConfiguration();
+        MappingSession.setConfiguration(configuration);
         MappingSession.registerEntity(BookEntity.class);
         MappingSession.registerEntity(ArticleEntity.class);
         MappingSession.start();
@@ -29,6 +32,7 @@ public class SqliteStore implements IStore {
 
     @Override
     public boolean save(Book book) {
+
         BookEntity bookEntity = ormBook(book);
         for (Article article : book.getArticles()){
             ArticleEntity articleEntity = new ArticleEntity();
@@ -39,7 +43,6 @@ public class SqliteStore implements IStore {
             articleEntity.lastUpdateTime = article.getLastUpdateTime();
             articleEntity.url = article.getUrl();
             articleEntity.insert();
-            Tool.log(articleEntity.content);
         }
         return true;
     }

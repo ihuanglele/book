@@ -63,7 +63,7 @@ public class QisuuLa extends AbstractSite {
     }
 
     protected Boolean isStop() {
-        return true;
+        return Integer.valueOf(bookId) <= 29599;
     }
 
 

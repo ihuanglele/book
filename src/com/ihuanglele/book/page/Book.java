@@ -28,7 +28,7 @@ public class Book {
 
     private Document document;
 
-    private String id;
+    protected String id;
     private Chapter chapter;
     private ArrayList<Article> articles;
 

@@ -7,6 +7,7 @@ import com.ihuanglele.book.page.Book;
 import com.ihuanglele.book.page.Chapter;
 import com.ihuanglele.book.store.IStore;
 import com.ihuanglele.book.util.GetHtmlPage;
+import com.ihuanglele.book.util.Tool;
 import okhttp3.Response;
 import org.jsoup.Jsoup;
 
@@ -21,6 +22,7 @@ import java.util.ArrayList;
 public abstract class AbstractSite {
 
     private Book book;
+    protected String bookId;
 
     protected Boolean isMobile = false;
 
@@ -35,12 +37,12 @@ public abstract class AbstractSite {
     private IStore store;
 
     /**
-     * 获取下一个章节地址
-     * @return 下一个章节地址
+     * 获取下一本书的地址ID
+     * @return 地址ID
      */
-    protected String getNextPageUrl() {
+    public String getNextPageId() {
         Integer id = Integer.valueOf(book.getId()) + 1;
-        return getPageUrl(String.valueOf(id));
+        return String.valueOf(id);
     }
 
     /**
@@ -48,7 +50,11 @@ public abstract class AbstractSite {
      * @param bookId 起始ID
      * @throws StopException
      */
-    public void start(String bookId) throws StopException {
+    public final void start(String bookId) throws PageErrorException,StopException {
+        this.bookId = bookId;
+        if(!isStop()){
+            throw new StopException("stop crawl");
+        }
         GetHtmlPage page = new GetHtmlPage();
         Response response = page.setMobile(isMobile)
                 .getPage(getPageUrl(bookId));
@@ -71,10 +77,9 @@ public abstract class AbstractSite {
         }
         book.setArticles(articles);
         store.save(book);
-        if(!this.isStop()){
-            start(this.getNextPageUrl());
-        }
+        Tool.log("saved Book" + bookId);
     }
+
 
     protected Book getBook(){
         return book;

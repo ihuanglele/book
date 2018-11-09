@@ -1,5 +1,6 @@
 package com.ihuanglele.book;
 
+import com.ihuanglele.book.exception.PageErrorException;
 import com.ihuanglele.book.exception.StopException;
 import com.ihuanglele.book.store.IStore;
 import com.ihuanglele.book.strategy.AbstractSite;
@@ -21,11 +22,19 @@ public class Runner {
     private IStore store;
 
     public void run() {
-        try{
-            site.setStore(store);
-            site.start(start);
-        }catch (StopException e){
-            e.printStackTrace();
+        Boolean isRun = true;
+        site.setStore(store);
+        while (isRun){
+            try{
+                site.start(start);
+                start = site.getNextPageId();
+            }catch (StopException e){
+                e.printStackTrace();
+                isRun = false;
+            } catch (PageErrorException e) {
+                e.printStackTrace();
+                isRun = true;
+            }
         }
     }
 
