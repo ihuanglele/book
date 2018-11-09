@@ -56,8 +56,7 @@ public abstract class AbstractSite {
             throw new StopException("stop crawl");
         }
         GetHtmlPage page = new GetHtmlPage();
-        Response response = page.setMobile(isMobile)
-                .getPage(getPageUrl(bookId));
+        Response response = page.setMobile(isMobile).getPage(getPageUrl(bookId));
         this.book = getBookPage(response);
         book.setId(bookId);
 
