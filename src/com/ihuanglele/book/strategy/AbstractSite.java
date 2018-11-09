@@ -11,6 +11,8 @@ import okhttp3.Response;
 import org.jsoup.Jsoup;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 
 /**
@@ -174,7 +176,17 @@ public abstract class AbstractSite {
         if(href.startsWith("http")){
             return href;
         }else {
-            return url + href;
+            if(href.startsWith("/")){
+                try {
+                    URL u = new URL(url);
+                    return u.getProtocol()+"://"+u.getHost()+href;
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                    return href;
+                }
+            }else {
+                return url + href;
+            }
         }
     }
 
