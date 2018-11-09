@@ -35,7 +35,7 @@ public class Runner {
                 isRun = false;
             } catch (PageErrorException e) {
 //                e.printStackTrace();
-                Tool.log(start + " :保存失败 -> " + e.getMessage());
+                Tool.save(start + " :保存失败 -> " + e.getMessage(), "bookSave");
                 start = site.getNextPageId();
                 isRun = true;
             }

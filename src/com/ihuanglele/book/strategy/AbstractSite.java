@@ -98,9 +98,9 @@ public abstract class AbstractSite {
         while (articles.size() != chapter.getLinks().size()) {
             try {
                 sleep(1000);
-                Tool.log(articles.size() + "<-articles  links->" + chapter.getLinks().size());
+//                Tool.log(articles.size() + "<-articles  links->" + chapter.getLinks().size());
             } catch (InterruptedException e) {
-                e.printStackTrace();
+//                e.printStackTrace();
             }
         }
         book.setArticles(articles);
