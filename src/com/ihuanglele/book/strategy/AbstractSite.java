@@ -104,8 +104,6 @@ public abstract class AbstractSite {
             }
         }
         book.setArticles(articles);
-        Tool.log(articles.size());
-
         store.save(book);
         Tool.save("saved Book" + bookId, "bookSave");
     }
