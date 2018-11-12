@@ -1,7 +1,5 @@
 package com.ihuanglele.book.util;
 
-import com.ihuanglele.book.page.Book;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
