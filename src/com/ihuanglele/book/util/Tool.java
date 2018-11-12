@@ -86,13 +86,13 @@ public class Tool extends TimerTask{
     }
 
     private synchronized static void autoWriteBuf(){
-        log("检测写入");
+//        log("检测写入");
         if(isRuning){
             return;
         }else {
             isRuning = true;
         }
-        log("开始写入");
+//        log("开始写入");
         for (String type : fileBufHashMap.keySet()) {
             String content = fileBufHashMap.get(type);
             if("".equals(content)){
@@ -103,6 +103,7 @@ public class Tool extends TimerTask{
                 fileBufHashMap.put(type,"");
                 try {
                     fileWriter.write(content);
+                    log(content);
                     fileWriter.flush();
                     if(isClose){
                         fileWriter.close();
@@ -113,7 +114,7 @@ public class Tool extends TimerTask{
             }
         }
         isRuning = false;
-        log("写入完成");
+//        log("写入完成");
     }
 
 }

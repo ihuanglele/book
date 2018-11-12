@@ -29,14 +29,16 @@ public class SqliteStore implements IStore {
 
         BookEntity bookEntity = ormBook(book);
         for (Article article : book.getArticles()){
-            ArticleEntity articleEntity = new ArticleEntity();
-            articleEntity.bookId = bookEntity.id;
-            articleEntity.chapterNo = article.getChapterNo();
-            articleEntity.title = article.getTitle();
-            articleEntity.content = article.getContent();
-            articleEntity.lastUpdateTime = article.getLastUpdateTime();
-            articleEntity.url = article.getUrl();
-            articleEntity.insert();
+            if(null != article){
+                ArticleEntity articleEntity = new ArticleEntity();
+                articleEntity.bookId = bookEntity.id;
+                articleEntity.chapterNo = article.getChapterNo();
+                articleEntity.title = article.getTitle();
+                articleEntity.content = article.getContent();
+                articleEntity.lastUpdateTime = article.getLastUpdateTime();
+                articleEntity.url = article.getUrl();
+                articleEntity.insert();
+            }
         }
         return true;
     }

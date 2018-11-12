@@ -1,7 +1,6 @@
 package com.ihuanglele.book.util;
 
 import com.ihuanglele.book.exception.PageErrorException;
-import com.ihuanglele.book.exception.StopException;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -34,25 +33,30 @@ public class GetHtmlPage {
 
     public Response getPage(String url) throws PageErrorException {
         this.url = url;
+        Tool.save(url,"urls");
         return this.request();
     }
 
     private Response request() throws PageErrorException {
         Request request = new Request.Builder()
-                .url(url)
                 .addHeader("User-Agent",isMobile ? GetHtmlPage.mobileAgent : GetHtmlPage.pcAgent)
+                .addHeader("Connection","close")
+                .url(url)
                 .build();
+        request.url();
 
+
+        Response response = null;
         try {
-            Response response = client.newCall(request).execute();
+            client.newCall(request);
+            response = client.newCall(request).execute();
             if(response.isSuccessful()){
                 return response;
             }else {
                 throw new PageErrorException("response：ERROR -> " + url + " " + response.message());
             }
         } catch (IOException e) {
-            e.printStackTrace();
-            throw new PageErrorException();
+            throw new PageErrorException("response：IOException -> " + url + " " + e.getMessage());
         }
     }
 

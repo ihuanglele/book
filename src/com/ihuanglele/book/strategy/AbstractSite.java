@@ -5,7 +5,6 @@ import com.ihuanglele.book.exception.StopException;
 import com.ihuanglele.book.page.Article;
 import com.ihuanglele.book.page.Book;
 import com.ihuanglele.book.page.Chapter;
-import com.ihuanglele.book.store.IStore;
 import com.ihuanglele.book.util.GetHtmlPage;
 import com.ihuanglele.book.util.Tool;
 import okhttp3.Response;
@@ -15,6 +14,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Date;
 
 import static java.lang.Thread.sleep;
 
@@ -67,47 +67,89 @@ public abstract class AbstractSite {
         GetHtmlPage page = new GetHtmlPage();
         Response response = page.setMobile(site.isMobile).getPage(site.getPageUrl(bookId));
         site.setBook(site.getBookPage(response));
+        response.close();
         site.getBook().setId(bookId);
 
-        Chapter chapter = site.getChapterPage(page.getPage(site.getChapterUrl()));
+        Response chapterRes = page.getPage(site.getChapterUrl());
+        Chapter chapter = site.getChapterPage(chapterRes);
+        chapterRes.close();
         site.getBook().setChapter(chapter);
 
         ArrayList<Article> articles = new ArrayList<>();
+        site.getBook().setArticles(articles);
+
+        /**
+         * 线程计数 方便统计线程状态
+         */
+        class Counter{
+            private Integer size = chapter.getLinks().size();
+
+            private Integer current = 0;
+
+            public void add(){
+                current++;
+            }
+
+            public Integer getSize(){
+                return size;
+            }
+
+            public Integer getCurrent(){
+                return current;
+            }
+
+            public String string(){
+                return size + "<-size  current->" + current;
+            }
+
+            public boolean isEqual(){
+                return size.equals(current);
+            }
+
+        }
+
+        Counter counter = new Counter();
 
         for (Chapter.Link link : chapter.getLinks()){
             (new Thread() {
                 @Override
-                public void run() {
+                public synchronized void run() {
                     Article article = null;
+                    Tool.log(this.getName());
+                    String log = link.getTitle() + "   " + link.getHref();
+                    Long t1 = (new Date()).getTime();
                     try {
-                        article = site.getArticlePage(page.getPage(link.getHref()));
+                        Response articleRes = page.getPage(link.getHref());
+                        article = site.getArticlePage(articleRes);
+                        articleRes.close();
+                        if (null == article.getChapterNo()) {
+                            article.setChapterNo(link.getChapterNo());
+                        }
+                        if (null == article.getTitle()) {
+                            article.setTitle(link.getTitle());
+                        }
+                        log += "  -> success";
                     } catch (PageErrorException e) {
-                        e.printStackTrace();
+                        log += "  -> fail:" + e.getMessage();
+                    }finally {
+                        Long t2 = (new Date()).getTime();
+                        counter.add();
+                        Tool.save((t2 - t1)/1000 + " " + log,"articleHref");
+                        site.getBook().getArticles().add(article);
                     }
-                    if (null == article.getChapterNo()) {
-                        article.setChapterNo(link.getChapterNo());
-                    }
-                    if (null == article.getTitle()) {
-                        article.setTitle(link.getTitle());
-                    }
-                    articles.add(article);
                 }
             }).start();
         }
 
-        Integer t = 0;
-        // 最多等待 5s
-        Integer max = (int) (chapter.getLinks().size() * 0.02) + 3;
-        while (articles.size() != chapter.getLinks().size() && t <= max) {
+        while (!counter.isEqual()) {
             try {
-                sleep(1000);
-                t++;
+                sleep(3000);
+                Tool.log(counter.string());
             } catch (InterruptedException e) {
-//                e.printStackTrace();
+                e.printStackTrace();
                 Tool.log("sleep Error" + e.getMessage());
             }
         }
-        site.getBook().setArticles(articles);
         return site;
     }
 
