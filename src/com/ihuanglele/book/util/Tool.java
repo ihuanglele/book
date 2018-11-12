@@ -17,6 +17,8 @@ public class Tool extends TimerTask{
     // FileWriter 对象 HashMap
     private static HashMap<String, FileWriter> fileWriterHashMap = new HashMap<>();
 
+    private static Timer timer;
+
     // 打印到控制台
     public static void log(Object o){
         System.out.println(o);
@@ -28,6 +30,8 @@ public class Tool extends TimerTask{
     // 是否在执行自动写入文件
     private static Boolean isRuning = false;
 
+    private static Boolean isClose = false;
+
     // 保存 log 入口
     public static void save(String s, String type) {
         String time = new SimpleDateFormat("yy-MM-dd HH:mm:ss").format(new Date());
@@ -35,21 +39,20 @@ public class Tool extends TimerTask{
         if(fileBufHashMap.containsKey(type)){
             // 已经存在
             fileBufHashMap.put(type,fileBufHashMap.get(type)+content);
-            log(fileBufHashMap.get(type));
         }else {
             fileBufHashMap.put(type,content);
         }
     }
 
+
     static {
-        Timer timer = new Timer();
+        timer = new Timer();
         timer.schedule(new Tool(),1000,30000);
     }
 
 
     private static FileWriter getWriter(String type) {
-        type = type.replace("/", "");
-        if (fileWriterHashMap.containsKey(type)) {
+        if (fileWriterHashMap.containsKey(type) && null != fileWriterHashMap.get(type)) {
             return fileWriterHashMap.get(type);
         } else {
             FileWriter fileWriter = null;
@@ -64,7 +67,6 @@ public class Tool extends TimerTask{
                     fileWriterHashMap.put(type, fileWriter);
                 }
             } catch (IOException e) {
-//                e.printStackTrace();
                 Tool.log("创建日志文件失败" + type);
             }
             return fileWriter;
@@ -73,7 +75,9 @@ public class Tool extends TimerTask{
 
     // 保存
     public static void closeFileWriter() {
+        isClose = true;
         autoWriteBuf();
+        timer.cancel();
     }
 
     @Override
@@ -81,7 +85,7 @@ public class Tool extends TimerTask{
         autoWriteBuf();
     }
 
-    private static void autoWriteBuf(){
+    private synchronized static void autoWriteBuf(){
         log("检测写入");
         if(isRuning){
             return;
@@ -95,15 +99,20 @@ public class Tool extends TimerTask{
                 continue;
             }
             FileWriter fileWriter = getWriter(type);
-            fileBufHashMap.put(type,"");
-            try {
-                fileWriter.write(content);
-                fileWriter.close();
-            } catch (IOException e) {
-                e.printStackTrace();
+            if(null != fileWriter){
+                fileBufHashMap.put(type,"");
+                try {
+                    fileWriter.write(content);
+                    fileWriter.flush();
+                    if(isClose){
+                        fileWriter.close();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
-        isRuning = true;
+        isRuning = false;
         log("写入完成");
     }
 

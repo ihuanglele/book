@@ -23,8 +23,6 @@ public class Runner {
         this.siteName = siteName;
     }
 
-
-
     public void run() {
         Boolean isRun = true;
         while (isRun){
@@ -50,6 +48,7 @@ public class Runner {
                 isRun = false;
             }
         }
+        Tool.log("isRun IS" + isRun);
         Tool.closeFileWriter();
     }
 
