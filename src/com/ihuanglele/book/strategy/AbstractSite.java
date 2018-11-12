@@ -24,23 +24,13 @@ import static java.lang.Thread.sleep;
 @SuppressWarnings("ALL")
 public abstract class AbstractSite {
 
+    private final static String sitePackage = "com.ihuanglele.book.strategy";
+
     private Book book;
     protected String bookId;
-
     protected Boolean isMobile = false;
 
-    public IStore getStore() {
-        return store;
-    }
-
-    public void setStore(IStore store) {
-        this.store = store;
-    }
-
-    private IStore store;
-
-
-    private void clean() {
+    public void clean() {
         book = null;
     }
 
@@ -58,19 +48,29 @@ public abstract class AbstractSite {
      * @param bookId 起始ID
      * @throws StopException
      */
-    public final void start(String bookId) throws PageErrorException,StopException {
-        this.clean();
-        this.bookId = bookId;
-        if(!isStop()){
+    public static final AbstractSite start(String siteName,String bookId) throws PageErrorException,StopException {
+        AbstractSite site;
+        try {
+            Class<?> c = Class.forName(sitePackage + "." + siteName);
+            site = (AbstractSite)c.newInstance();
+        } catch (ClassNotFoundException e) {
+            throw new StopException(siteName + "ClassNotFoundException -> " + e.getMessage());
+        } catch (IllegalAccessException e) {
+            throw new StopException(siteName + "IllegalAccessException -> " + e.getMessage());
+        } catch (InstantiationException e) {
+            throw new StopException(siteName + "InstantiationException -> " + e.getMessage());
+        }
+        site.bookId = bookId;
+        if(!site.isStop()){
             throw new StopException("stop crawl");
         }
         GetHtmlPage page = new GetHtmlPage();
-        Response response = page.setMobile(isMobile).getPage(getPageUrl(bookId));
-        this.book = getBookPage(response);
-        book.setId(bookId);
+        Response response = page.setMobile(site.isMobile).getPage(site.getPageUrl(bookId));
+        site.setBook(site.getBookPage(response));
+        site.getBook().setId(bookId);
 
-        Chapter chapter = getChapterPage(page.getPage(getChapterUrl()));
-        book.setChapter(chapter);
+        Chapter chapter = site.getChapterPage(page.getPage(site.getChapterUrl()));
+        site.getBook().setChapter(chapter);
 
         ArrayList<Article> articles = new ArrayList<>();
 
@@ -80,7 +80,7 @@ public abstract class AbstractSite {
                 public void run() {
                     Article article = null;
                     try {
-                        article = getArticlePage(page.getPage(link.getHref()));
+                        article = site.getArticlePage(page.getPage(link.getHref()));
                     } catch (PageErrorException e) {
                         e.printStackTrace();
                     }
@@ -101,20 +101,20 @@ public abstract class AbstractSite {
         while (articles.size() != chapter.getLinks().size() && t <= max) {
             try {
                 sleep(1000);
-                Tool.log(articles.size() + "<-articles  links->" + chapter.getLinks().size());
                 t++;
-                Tool.log(t);
             } catch (InterruptedException e) {
 //                e.printStackTrace();
+                Tool.log("sleep Error" + e.getMessage());
             }
         }
-        book.setArticles(articles);
-        store.save(book);
-        Tool.save("saved Book" + bookId, "bookSave");
+        site.getBook().setArticles(articles);
+        return site;
     }
 
-
-    protected Book getBook(){
+    public void setBook(Book book) {
+        this.book = book;
+    }
+    public Book getBook(){
         return book;
     }
 

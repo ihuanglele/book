@@ -7,10 +7,9 @@ import com.ihuanglele.book.strategy.QisuuLa;
 class Main {
 
     public static void main(String[] args) {
-        AbstractSite site = new QisuuLa();
         IStore store = new SqliteStore();
         Runner runner = new Runner();
-        runner.setSite(site);
+        runner.setSiteName("QisuuLa");
         runner.setStore(store);
         runner.setStart("1");
         runner.run();

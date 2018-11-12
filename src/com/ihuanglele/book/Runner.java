@@ -10,34 +10,44 @@ import com.ihuanglele.book.util.Tool;
  * Created by ihuanglele on 2018/11/8.
  */
 public class Runner {
-    public AbstractSite getSite() {
-        return site;
-    }
 
-    public void setSite(AbstractSite site) {
-        this.site = site;
-    }
-
-    private AbstractSite site;
     private String start;
     private IStore store;
+    private String siteName;
+
+    public String getSiteName() {
+        return siteName;
+    }
+
+    public void setSiteName(String siteName) {
+        this.siteName = siteName;
+    }
+
+
 
     public void run() {
         Boolean isRun = true;
-        site.setStore(store);
         while (isRun){
-            try{
-                site.start(start);
+            AbstractSite site = null;
+            try {
+                site = AbstractSite.start(siteName,start);
+                store.save(site.getBook());
+                Tool.save("saved Book" + start, "bookSave");
                 start = site.getNextPageId();
-            }catch (StopException e){
-//                e.printStackTrace();
+                site.clean();
+            } catch (PageErrorException e) {
+                Tool.save(start + " :保存失败 -> " + e.getMessage(), "bookSave");
+                if(null != site){
+                    start = site.getNextPageId();
+                    Tool.save(start + " :保存失败 -> " + e.getMessage(), "bookSave");
+                    site.clean();
+                }else {
+                    isRun = false;
+                    Tool.log("Stop Unexpected");
+                }
+            } catch (StopException e) {
                 Tool.log("Stop");
                 isRun = false;
-            } catch (PageErrorException e) {
-//                e.printStackTrace();
-                Tool.save(start + " :保存失败 -> " + e.getMessage(), "bookSave");
-                start = site.getNextPageId();
-                isRun = true;
             }
         }
         Tool.closeFileWriter();

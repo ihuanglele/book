@@ -4,16 +4,10 @@ import com.ihuanglele.book.entity.ArticleEntity;
 import com.ihuanglele.book.entity.BookEntity;
 import com.ihuanglele.book.page.Article;
 import com.ihuanglele.book.page.Book;
-import com.ihuanglele.book.util.Tool;
 import org.orman.dbms.Database;
 import org.orman.dbms.sqlite.SQLite;
 import org.orman.mapper.MappingConfiguration;
 import org.orman.mapper.MappingSession;
-
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
 
 /**
  * Created by ihuanglele on 2018/11/9.
