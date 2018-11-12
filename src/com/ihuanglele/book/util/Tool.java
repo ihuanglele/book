@@ -8,30 +8,46 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Created by ihuanglele on 2018/11/8.
  */
-public class Tool {
+public class Tool extends TimerTask{
 
+    // FileWriter 对象 HashMap
     private static HashMap<String, FileWriter> fileWriterHashMap = new HashMap<>();
 
+    // 打印到控制台
     public static void log(Object o){
         System.out.println(o);
     }
 
+    // 待写入log buf
+    private final static HashMap<String,String> fileBufHashMap = new HashMap<>();
+
+    // 是否在执行自动写入文件
+    private static Boolean isRuning = false;
+
+    // 保存 log 入口
     public static void save(String s, String type) {
-        FileWriter fileWriter = getWriter(type);
-        if (null != fileWriter) {
-            try {
-                String time = new SimpleDateFormat("yy-MM-dd HH:mm:ss").format(new Date());
-                fileWriter.write("【" + time + "】" + s + "\r\n");
-            } catch (IOException e) {
-                e.printStackTrace();
-                log("【type】写入失败:'" + e.getMessage());
-            }
+        String time = new SimpleDateFormat("yy-MM-dd HH:mm:ss").format(new Date());
+        String content = "【" + time + "】" + s + "\r\n";
+        if(fileBufHashMap.containsKey(type)){
+            // 已经存在
+            fileBufHashMap.put(type,fileBufHashMap.get(type)+content);
+            log(fileBufHashMap.get(type));
+        }else {
+            fileBufHashMap.put(type,content);
         }
     }
+
+    static {
+        Timer timer = new Timer();
+        timer.schedule(new Tool(),1000,30000);
+    }
+
 
     private static FileWriter getWriter(String type) {
         type = type.replace("/", "");
@@ -57,15 +73,40 @@ public class Tool {
         }
     }
 
+    // 保存
     public static void closeFileWriter() {
-        for (String type : fileWriterHashMap.keySet()) {
-            FileWriter fileWriter = fileWriterHashMap.get(type);
+        autoWriteBuf();
+    }
+
+    @Override
+    public void run() {
+        autoWriteBuf();
+    }
+
+    private static void autoWriteBuf(){
+        log("检测写入");
+        if(isRuning){
+            return;
+        }else {
+            isRuning = true;
+        }
+        log("开始写入");
+        for (String type : fileBufHashMap.keySet()) {
+            String content = fileBufHashMap.get(type);
+            if("".equals(content)){
+                continue;
+            }
+            FileWriter fileWriter = getWriter(type);
+            fileBufHashMap.put(type,"");
             try {
+                fileWriter.write(content);
                 fileWriter.close();
             } catch (IOException e) {
-//                    e.printStackTrace();
+                e.printStackTrace();
             }
         }
+        isRuning = true;
+        log("写入完成");
     }
 
 }
