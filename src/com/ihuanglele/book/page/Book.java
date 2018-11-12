@@ -28,7 +28,7 @@ public class Book {
 
     private Document document;
 
-    protected String id;
+    private String id;
     private Chapter chapter;
     private ArrayList<Article> articles;
 
@@ -50,7 +50,7 @@ public class Book {
     }
 
     public Map<String,String> string(){
-        Map<String,String> map = new HashMap<String, String>();
+        Map<String, String> map = new HashMap<>();
         map.put("title",title);
         map.put("url",url);
         map.put("author",author);

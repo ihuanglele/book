@@ -30,15 +30,17 @@ public class Runner {
                 site.start(start);
                 start = site.getNextPageId();
             }catch (StopException e){
-                e.printStackTrace();
+//                e.printStackTrace();
+                Tool.log("Stop");
                 isRun = false;
             } catch (PageErrorException e) {
 //                e.printStackTrace();
-                Tool.log(start + " :保存失败 ->"+e.getMessage());
+                Tool.save(start + " :保存失败 -> " + e.getMessage(), "bookSave");
                 start = site.getNextPageId();
                 isRun = true;
             }
         }
+        Tool.closeFileWriter();
     }
 
     public String getStart() {

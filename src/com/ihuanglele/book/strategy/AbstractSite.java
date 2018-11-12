@@ -16,9 +16,12 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
+import static java.lang.Thread.sleep;
+
 /**
  * Created by ihuanglele on 2018/11/8.
  */
+@SuppressWarnings("ALL")
 public abstract class AbstractSite {
 
     private Book book;
@@ -36,6 +39,11 @@ public abstract class AbstractSite {
 
     private IStore store;
 
+
+    private void clean() {
+        book = null;
+    }
+
     /**
      * 获取下一本书的地址ID
      * @return 地址ID
@@ -51,6 +59,7 @@ public abstract class AbstractSite {
      * @throws StopException
      */
     public final void start(String bookId) throws PageErrorException,StopException {
+        this.clean();
         this.bookId = bookId;
         if(!isStop()){
             throw new StopException("stop crawl");
@@ -59,29 +68,49 @@ public abstract class AbstractSite {
         Response response = page.setMobile(isMobile).getPage(getPageUrl(bookId));
         this.book = getBookPage(response);
         book.setId(bookId);
-        response.close();
 
-        Response chapterRes = page.getPage(getChapterUrl());
-        Chapter chapter = getChapterPage(chapterRes);
+        Chapter chapter = getChapterPage(page.getPage(getChapterUrl()));
         book.setChapter(chapter);
-        chapterRes.close();
 
         ArrayList<Article> articles = new ArrayList<>();
+
         for (Chapter.Link link : chapter.getLinks()){
-            Response articleRes = page.getPage(link.getHref());
-            Article article = getArticlePage(articleRes);
-            articleRes.close();
-            if(null == article.getChapterNo()){
-                article.setChapterNo(link.getChapterNo());
+            (new Thread() {
+                @Override
+                public void run() {
+                    Article article = null;
+                    try {
+                        article = getArticlePage(page.getPage(link.getHref()));
+                    } catch (PageErrorException e) {
+                        e.printStackTrace();
+                    }
+                    if (null == article.getChapterNo()) {
+                        article.setChapterNo(link.getChapterNo());
+                    }
+                    if (null == article.getTitle()) {
+                        article.setTitle(link.getTitle());
+                    }
+                    articles.add(article);
+                }
+            }).start();
+        }
+
+        Integer t = 0;
+        // 最多等待 5s
+        Integer max = (int) (chapter.getLinks().size() * 0.02) + 3;
+        while (articles.size() != chapter.getLinks().size() && t <= max) {
+            try {
+                sleep(1000);
+                Tool.log(articles.size() + "<-articles  links->" + chapter.getLinks().size());
+                t++;
+                Tool.log(t);
+            } catch (InterruptedException e) {
+//                e.printStackTrace();
             }
-            if(null == article.getTitle()){
-                article.setTitle(link.getTitle());
-            }
-            articles.add(article);
         }
         book.setArticles(articles);
         store.save(book);
-        Tool.log("saved Book" + bookId);
+        Tool.save("saved Book" + bookId, "bookSave");
     }
 
 

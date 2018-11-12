@@ -15,10 +15,10 @@ public class GetHtmlPage {
     // 当前抓取的URL
     private String url;
 
-    public static final String mobileAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1";
-    public static final String pcAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36";
+    private static final String mobileAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1";
+    private static final String pcAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36";
 
-    private OkHttpClient client = new OkHttpClient();
+    private final OkHttpClient client = new OkHttpClient();
 
     // 是否使用手机模式访问
     private boolean isMobile = false;
@@ -48,7 +48,7 @@ public class GetHtmlPage {
             if(response.isSuccessful()){
                 return response;
             }else {
-                throw new PageErrorException("response：ERROR -> "+ url + response.message());
+                throw new PageErrorException("response：ERROR -> " + url + " " + response.message());
             }
         } catch (IOException e) {
             e.printStackTrace();
