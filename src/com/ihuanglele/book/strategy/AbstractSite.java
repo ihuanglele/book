@@ -89,7 +89,7 @@ public abstract class AbstractSite {
         for (Chapter.Link link : chapter.getLinks()){
             excutor.execute((new Thread() {
                 @Override
-                public synchronized void run() {
+                public void run() {
                     Article article = null;
                     String log = link.getTitle() + "   " + link.getHref();
                     Long t1 = (new Date()).getTime();
@@ -127,6 +127,7 @@ public abstract class AbstractSite {
                 Tool.log("sleep Error" + e.getMessage());
             }
         }
+        Tool.log(arts.getTitle());
         site.getBook().setArticles(arts.getArticles());
         return site;
     }
@@ -287,14 +288,19 @@ class Counter{
 
 class Arts{
     private ArrayList<Article> articles = new ArrayList<>();
+    private String title = "";
 
     public void setArt(Article article){
-        Tool.log(article.getTitle());
+        title = (article.getTitle());
         articles.add(article);
     }
 
     public ArrayList<Article> getArticles(){
         return articles;
+    }
+
+    public String getTitle(){
+        return title;
     }
 
 }
