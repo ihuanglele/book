@@ -15,6 +15,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import static java.lang.Thread.sleep;
 
@@ -29,6 +32,8 @@ public abstract class AbstractSite {
     private Book book;
     protected String bookId;
     protected Boolean isMobile = false;
+
+    protected static final ThreadPoolExecutor excutor = new ThreadPoolExecutor(100,Integer.MAX_VALUE,5, TimeUnit.SECONDS,new LinkedBlockingDeque<Runnable>());
 
     public void clean() {
         book = null;
@@ -61,6 +66,7 @@ public abstract class AbstractSite {
             throw new StopException(siteName + "InstantiationException -> " + e.getMessage());
         }
         site.bookId = bookId;
+        Tool.save("----开始执行"+bookId+"----","articleHref");
         if(!site.isStop()){
             throw new StopException("stop crawl");
         }
@@ -78,44 +84,14 @@ public abstract class AbstractSite {
         ArrayList<Article> articles = new ArrayList<>();
         site.getBook().setArticles(articles);
 
-        /**
-         * 线程计数 方便统计线程状态
-         */
-        class Counter{
-            private Integer size = chapter.getLinks().size();
-
-            private Integer current = 0;
-
-            public void add(){
-                current++;
-            }
-
-            public Integer getSize(){
-                return size;
-            }
-
-            public Integer getCurrent(){
-                return current;
-            }
-
-            public String string(){
-                return size + "<-size  current->" + current;
-            }
-
-            public boolean isEqual(){
-                return size.equals(current);
-            }
-
-        }
-
-        Counter counter = new Counter();
+        int linkSize = chapter.getLinks().size();
+        Counter counter = new Counter(linkSize);
 
         for (Chapter.Link link : chapter.getLinks()){
-            (new Thread() {
+            excutor.execute((new Thread() {
                 @Override
                 public synchronized void run() {
                     Article article = null;
-                    Tool.log(this.getName());
                     String log = link.getTitle() + "   " + link.getHref();
                     Long t1 = (new Date()).getTime();
                     try {
@@ -138,13 +114,15 @@ public abstract class AbstractSite {
                         site.getBook().getArticles().add(article);
                     }
                 }
-            }).start();
+            }));
         }
 
-        while (!counter.isEqual()) {
+        while (!counter.getSize().equals(linkSize)) {
             try {
                 sleep(3000);
-                Tool.log(counter.string());
+                Tool.log(counter.string()+" : activeCount"
+                        + excutor.getActiveCount()
+                        + "\t queueSize" + excutor.getQueue().size());
             } catch (InterruptedException e) {
                 e.printStackTrace();
                 Tool.log("sleep Error" + e.getMessage());
@@ -268,6 +246,41 @@ public abstract class AbstractSite {
                 return url + href;
             }
         }
+    }
+
+}
+
+/**
+ * 线程计数 方便统计线程状态
+ */
+class Counter{
+
+    private Integer size = 0;
+
+    private Integer current = 0;
+
+    public Counter(int size) {
+        this.size = size;
+    }
+
+    public void add(){
+        current++;
+    }
+
+    public Integer getSize(){
+        return size;
+    }
+
+    public Integer getCurrent(){
+        return current;
+    }
+
+    public String string(){
+        return size + "<-size  current->" + current;
+    }
+
+    public boolean isEqual(){
+        return size.equals(current);
     }
 
 }
