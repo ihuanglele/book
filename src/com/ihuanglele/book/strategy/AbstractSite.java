@@ -43,9 +43,9 @@ public abstract class AbstractSite {
      * 获取下一本书的地址ID
      * @return 地址ID
      */
-    public String getNextPageId() {
+    public static String getNextPageId(String bookId) {
         Integer id = Integer.valueOf(bookId) + 1;
-        return String.valueOf(id);
+        return ""+id;
     }
 
     /**
@@ -81,8 +81,7 @@ public abstract class AbstractSite {
         chapterRes.close();
         site.getBook().setChapter(chapter);
 
-        ArrayList<Article> articles = new ArrayList<>();
-        site.getBook().setArticles(articles);
+        Arts arts = new Arts();
 
         int linkSize = chapter.getLinks().size();
         Counter counter = new Counter(linkSize);
@@ -109,15 +108,15 @@ public abstract class AbstractSite {
                         log += "  -> fail:" + e.getMessage();
                     }finally {
                         Long t2 = (new Date()).getTime();
-                        counter.add();
                         Tool.save((t2 - t1)/1000 + " " + log,"articleHref");
-                        site.getBook().getArticles().add(article);
+                        counter.add();
+                        arts.setArt(article);
                     }
                 }
             }));
         }
 
-        while (!counter.getSize().equals(linkSize)) {
+        while (counter.getSize() < linkSize) {
             try {
                 sleep(3000);
                 Tool.log(counter.string()+" : activeCount"
@@ -128,6 +127,7 @@ public abstract class AbstractSite {
                 Tool.log("sleep Error" + e.getMessage());
             }
         }
+        site.getBook().setArticles(arts.getArticles());
         return site;
     }
 
@@ -259,7 +259,7 @@ class Counter{
 
     private Integer current = 0;
 
-    public Counter(int size) {
+    public Counter(Integer size) {
         this.size = size;
     }
 
@@ -281,6 +281,20 @@ class Counter{
 
     public boolean isEqual(){
         return size.equals(current);
+    }
+
+}
+
+class Arts{
+    private ArrayList<Article> articles = new ArrayList<>();
+
+    public void setArt(Article article){
+        Tool.log(article.getTitle());
+        articles.add(article);
+    }
+
+    public ArrayList<Article> getArticles(){
+        return articles;
     }
 
 }

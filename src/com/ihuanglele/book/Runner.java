@@ -25,24 +25,19 @@ public class Runner {
 
     public void run() {
         Boolean isRun = true;
+        AbstractSite site = null;
         while (isRun){
-            AbstractSite site = null;
             try {
                 site = AbstractSite.start(siteName,start);
                 store.save(site.getBook());
                 Tool.save("saved Book" + start, "bookSave");
-                start = site.getNextPageId();
+                start = site.getNextPageId(start);
                 site.clean();
             } catch (PageErrorException e) {
                 Tool.save(start + " :保存失败 -> " + e.getMessage(), "bookSave");
-                if(null != site){
-                    start = site.getNextPageId();
-                    Tool.save(start + " :保存失败 -> " + e.getMessage(), "bookSave");
-                    site.clean();
-                }else {
-                    isRun = false;
-                    Tool.log("Stop Unexpected");
-                }
+                Tool.log(site);
+                start = site.getNextPageId(start);
+                site.clean();
             } catch (StopException e) {
                 Tool.log("Stop");
                 isRun = false;
