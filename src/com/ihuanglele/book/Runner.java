@@ -4,6 +4,7 @@ import com.ihuanglele.book.exception.PageErrorException;
 import com.ihuanglele.book.exception.StopException;
 import com.ihuanglele.book.store.IStore;
 import com.ihuanglele.book.strategy.AbstractSite;
+import com.ihuanglele.book.util.Config;
 import com.ihuanglele.book.util.Tool;
 
 /**
@@ -42,7 +43,6 @@ public class Runner {
                 isRun = false;
             }
         }
-        Tool.closeFileWriter();
         Tool.log("isRun IS Stopped");
     }
 
@@ -61,4 +61,27 @@ public class Runner {
     public void setStore(IStore store) {
         this.store = store;
     }
+
+    public void autoRun(){
+        setSiteName(Config.get("site"));
+        setStart(Config.get("start"));
+
+        Class<?> c = null;
+        try {
+            c = Class.forName("com.ihuanglele.book.store." + Config.get("storeclass"));
+            setStore((IStore)c.newInstance());
+            run();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            Tool.log(e.getMessage());
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+            Tool.log(e.getMessage());
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+            Tool.log(e.getMessage());
+        }
+
+    }
+
 }
