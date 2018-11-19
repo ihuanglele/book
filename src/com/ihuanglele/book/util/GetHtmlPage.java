@@ -6,6 +6,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by ihuanglele on 2018/11/8.
@@ -17,10 +18,17 @@ public class GetHtmlPage {
     private static final String mobileAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1";
     private static final String pcAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36";
 
-    private final OkHttpClient client = new OkHttpClient();
+    private OkHttpClient client;
 
     // 是否使用手机模式访问
     private boolean isMobile = false;
+
+    public GetHtmlPage() {
+        client = new OkHttpClient.Builder()
+                .connectTimeout(5,TimeUnit.SECONDS)
+                .readTimeout(5,TimeUnit.SECONDS)
+                .build();
+    }
 
     public boolean isMobile() {
         return isMobile;

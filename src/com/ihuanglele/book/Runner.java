@@ -35,16 +35,15 @@ public class Runner {
                 site.clean();
             } catch (PageErrorException e) {
                 Tool.save(start + " :保存失败 -> " + e.getMessage(), "bookSave");
-                Tool.log(site);
                 start = site.getNextPageId(start);
                 site.clean();
             } catch (StopException e) {
-                Tool.log("Stop");
+                Tool.log(start + " :保存结束 -> "+e.getMessage());
                 isRun = false;
             }
         }
-        Tool.log("isRun IS" + isRun);
         Tool.closeFileWriter();
+        Tool.log("isRun IS Stopped");
     }
 
     public String getStart() {

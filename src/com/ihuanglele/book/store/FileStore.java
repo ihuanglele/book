@@ -10,7 +10,6 @@ import com.ihuanglele.book.util.Tool;
 public class FileStore implements IStore {
 
     public boolean save(Book book) {
-        Tool.log(book.getTitle());
         for (Article article : book.getArticles()){
             Tool.log(article.getChapterNo() + " : " + article.getTitle());
         }

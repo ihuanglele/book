@@ -14,6 +14,10 @@ import java.util.TimerTask;
  */
 public class Tool extends TimerTask{
 
+    private static int logInc = 0;
+
+    private static int autoSaveInc = 0;
+
     // FileWriter 对象 HashMap
     private static HashMap<String, FileWriter> fileWriterHashMap = new HashMap<>();
 
@@ -21,7 +25,8 @@ public class Tool extends TimerTask{
 
     // 打印到控制台
     public static void log(Object o){
-        System.out.println(o);
+        logInc++;
+        System.out.println("【"+logInc+"】 -> "+o);
     }
 
     // 待写入log buf
@@ -91,6 +96,8 @@ public class Tool extends TimerTask{
         }else {
             isRuning = true;
         }
+        autoSaveInc++;
+        log("autoWriteBuf -> " + autoSaveInc);
         for (String type : fileBufHashMap.keySet()) {
             String content = fileBufHashMap.get(type);
             if("".equals(content)){

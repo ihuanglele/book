@@ -16,6 +16,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -33,7 +34,7 @@ public abstract class AbstractSite {
     protected String bookId;
     protected Boolean isMobile = false;
 
-    protected static final ThreadPoolExecutor excutor = new ThreadPoolExecutor(100,Integer.MAX_VALUE,5, TimeUnit.SECONDS,new LinkedBlockingDeque<Runnable>());
+    public static final ThreadPoolExecutor excutor = new ThreadPoolExecutor(100,Integer.MAX_VALUE,5, TimeUnit.SECONDS,new SynchronousQueue<>());
 
     public void clean() {
         book = null;
@@ -73,12 +74,10 @@ public abstract class AbstractSite {
         GetHtmlPage page = new GetHtmlPage();
         Response response = page.setMobile(site.isMobile).getPage(site.getPageUrl(bookId));
         site.setBook(site.getBookPage(response));
-        response.close();
         site.getBook().setId(bookId);
 
         Response chapterRes = page.getPage(site.getChapterUrl());
         Chapter chapter = site.getChapterPage(chapterRes);
-        chapterRes.close();
         site.getBook().setChapter(chapter);
 
         Arts arts = new Arts();
@@ -96,7 +95,6 @@ public abstract class AbstractSite {
                     try {
                         Response articleRes = page.getPage(link.getHref());
                         article = site.getArticlePage(articleRes);
-                        articleRes.close();
                         if (null == article.getChapterNo()) {
                             article.setChapterNo(link.getChapterNo());
                         }
@@ -116,20 +114,24 @@ public abstract class AbstractSite {
             }));
         }
 
-        while (counter.getSize() < linkSize) {
+        do {
             try {
-                sleep(3000);
                 Tool.log(counter.string()+" : activeCount"
                         + excutor.getActiveCount()
                         + "\t queueSize" + excutor.getQueue().size());
+                sleep(3000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
                 Tool.log("sleep Error" + e.getMessage());
             }
-        }
-        Tool.log(arts.getTitle());
+        }while (!excutor.getQueue().isEmpty());
         site.getBook().setArticles(arts.getArticles());
+        arts.setLock();
         return site;
+    }
+
+    public ThreadPoolExecutor getExcutor(){
+        return excutor;
     }
 
     public void setBook(Book book) {
@@ -167,6 +169,7 @@ public abstract class AbstractSite {
             Book book = new Book();
             book.setUrl(response.request().url().toString());
             book.setDocument(Jsoup.parse(response.body().string()));
+            response.close();
             return book;
         } catch (IOException e) {
             e.printStackTrace();
@@ -188,6 +191,7 @@ public abstract class AbstractSite {
             Chapter chapter = new Chapter();
             chapter.setUrl(response.request().url().toString());
             chapter.setDocument(Jsoup.parse(response.body().string()));
+            response.close();
             return chapter;
         }catch (IOException e){
             e.printStackTrace();
@@ -209,6 +213,7 @@ public abstract class AbstractSite {
             Article article = new Article();
             article.setUrl(response.request().url().toString());
             article.setDocument(Jsoup.parse(response.body().string()));
+            response.close();
             return article;
         }catch (IOException e){
             e.printStackTrace();
@@ -288,19 +293,24 @@ class Counter{
 
 class Arts{
     private ArrayList<Article> articles = new ArrayList<>();
-    private String title = "";
+    private boolean isLock = false;
 
     public void setArt(Article article){
-        title = (article.getTitle());
-        articles.add(article);
+        if(!isLock){
+            articles.add(article);
+        }
     }
 
     public ArrayList<Article> getArticles(){
         return articles;
     }
 
-    public String getTitle(){
-        return title;
+    public int getSize(){
+        return articles.size();
+    }
+
+    public void setLock(){
+        isLock = true;
     }
 
 }
