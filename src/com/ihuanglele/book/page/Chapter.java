@@ -47,7 +47,7 @@ public class Chapter {
         }
 
         public void string(){
-            Tool.log("title:"+title+"  href"+href + "  chapter_no"+chapterNo);
+            Tool.log("title: "+title+"   href: "+href + "    chapter_no: "+chapterNo);
         }
     }
 
