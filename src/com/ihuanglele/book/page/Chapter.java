@@ -1,5 +1,6 @@
 package com.ihuanglele.book.page;
 
+import com.ihuanglele.book.util.Tool;
 import org.jsoup.nodes.Document;
 
 import java.util.ArrayList;
@@ -44,6 +45,10 @@ public class Chapter {
         public void setChapterNo(String chapterNo) {
             this.chapterNo = chapterNo;
         }
+
+        public void string(){
+            Tool.log("title:"+title+"  href"+href + "  chapter_no"+chapterNo);
+        }
     }
 
     // 章节页面地址
@@ -75,5 +80,11 @@ public class Chapter {
 
     public void setLinks(ArrayList<Link> links) {
         this.links = links;
+    }
+
+    public void printLinks(){
+        for (Link link : links){
+            link.string();
+        }
     }
 }

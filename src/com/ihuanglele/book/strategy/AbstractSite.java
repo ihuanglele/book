@@ -112,19 +112,18 @@ public abstract class AbstractSite {
 
         do {
             try {
-                Tool.log(" : activeCount"
-                        + excutor.getActiveCount()
-                        + "\t queueSize" + excutor.getQueue().size());
+                Tool.log(bookId + " -> activeCount: "+ excutor.getActiveCount());
                 sleep(3000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
                 Tool.log("sleep Error" + e.getMessage());
             }
-        }while (!excutor.getQueue().isEmpty());
+        }while (excutor.getActiveCount() > 0);
         site.getBook().setArticles(arts.getArticles());
         arts.setLock();
         if(chapter.getLinks().size() != arts.getArticles().size()){
-            Tool.log("一共章节："+chapter.getLinks().size()+"  抓取章节："+arts.getArticles().size());
+            Tool.log(bookId + "一共章节："+chapter.getLinks().size()+"  抓取章节："+arts.getArticles().size());
+            chapter.printLinks();
         }
         return site;
     }
