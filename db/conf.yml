@@ -1,3 +1,4 @@
 crawl
   site:QisuuLa
   start:586
+  store:FileStore

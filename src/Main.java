@@ -9,9 +9,9 @@ class Main {
 
     public static void main(String[] args) {
         Config.init(args);
+        Runner runner = new Runner();
 //        IStore store = new SqliteStore();
 //        IStore store = new FileStore();
-        Runner runner = new Runner();
 //        runner.setSiteName("QisuuLa");
 //        runner.setStore(store);
 //        runner.setStart("586");

@@ -82,9 +82,6 @@ public abstract class AbstractSite {
 
         Arts arts = new Arts();
 
-        int linkSize = chapter.getLinks().size();
-        Counter counter = new Counter(linkSize);
-
         for (Chapter.Link link : chapter.getLinks()){
             excutor.execute((new Thread() {
                 @Override
@@ -107,7 +104,6 @@ public abstract class AbstractSite {
                     }finally {
                         Long t2 = (new Date()).getTime();
                         Tool.save((t2 - t1)/1000 + " " + log,"articleHref");
-                        counter.add();
                         arts.setArt(article);
                     }
                 }
@@ -116,7 +112,7 @@ public abstract class AbstractSite {
 
         do {
             try {
-                Tool.log(counter.string()+" : activeCount"
+                Tool.log(" : activeCount"
                         + excutor.getActiveCount()
                         + "\t queueSize" + excutor.getQueue().size());
                 sleep(3000);
@@ -127,6 +123,9 @@ public abstract class AbstractSite {
         }while (!excutor.getQueue().isEmpty());
         site.getBook().setArticles(arts.getArticles());
         arts.setLock();
+        if(chapter.getLinks().size() != arts.getArticles().size()){
+            Tool.log("一共章节："+chapter.getLinks().size()+"  抓取章节："+arts.getArticles().size());
+        }
         return site;
     }
 
@@ -169,11 +168,12 @@ public abstract class AbstractSite {
             Book book = new Book();
             book.setUrl(response.request().url().toString());
             book.setDocument(Jsoup.parse(response.body().string()));
-            response.close();
             return book;
         } catch (IOException e) {
             e.printStackTrace();
             throw new PageErrorException("getBookPage: IOException" + e.getMessage());
+        }finally {
+            response.close();
         }
     }
 
@@ -191,11 +191,12 @@ public abstract class AbstractSite {
             Chapter chapter = new Chapter();
             chapter.setUrl(response.request().url().toString());
             chapter.setDocument(Jsoup.parse(response.body().string()));
-            response.close();
             return chapter;
         }catch (IOException e){
             e.printStackTrace();
             throw new PageErrorException("getBookPage: IOException" + e.getMessage());
+        }finally {
+            response.close();
         }
     }
 
@@ -213,11 +214,12 @@ public abstract class AbstractSite {
             Article article = new Article();
             article.setUrl(response.request().url().toString());
             article.setDocument(Jsoup.parse(response.body().string()));
-            response.close();
             return article;
         }catch (IOException e){
             e.printStackTrace();
             throw new PageErrorException("getArticlePage: IOException" + e.getMessage());
+        }finally {
+            response.close();
         }
     };
 
@@ -252,41 +254,6 @@ public abstract class AbstractSite {
                 return url + href;
             }
         }
-    }
-
-}
-
-/**
- * 线程计数 方便统计线程状态
- */
-class Counter{
-
-    private Integer size = 0;
-
-    private Integer current = 0;
-
-    public Counter(Integer size) {
-        this.size = size;
-    }
-
-    public void add(){
-        current++;
-    }
-
-    public Integer getSize(){
-        return size;
-    }
-
-    public Integer getCurrent(){
-        return current;
-    }
-
-    public String string(){
-        return size + "<-size  current->" + current;
-    }
-
-    public boolean isEqual(){
-        return size.equals(current);
     }
 
 }

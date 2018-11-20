@@ -68,8 +68,9 @@ public class Runner {
 
         Class<?> c = null;
         try {
-            c = Class.forName("com.ihuanglele.book.store." + Config.get("storeclass"));
+            c = Class.forName("com.ihuanglele.book.store." + Config.get("store"));
             setStore((IStore)c.newInstance());
+            Tool.log(Config.get("start"));
             run();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();

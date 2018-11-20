@@ -9,21 +9,9 @@ public final class Config {
 
     private static HashMap<String,String> conf = new HashMap<>();
 
-    private Config config = null;
+    private static Config config = null;
 
-    public Config getConfig(){
-        if(null == config){
-            config = new Config();
-            conf.put("site","QisuuLa");
-            conf.put("start","1");
-            conf.put("storeClass","FileStore");
-        }
-        return config;
-    }
-
-    private Config(){
-        new Config();
-    }
+    private static boolean isInit = false;
 
     public static void autoSet(String key,String value){
         conf.put(key,value);
@@ -34,17 +22,24 @@ public final class Config {
     }
 
     public static void init(String[] args){
-        for (String key : args){
-            String[] param = key.split("=",2);
-            if(param[0].startsWith("-config=")){
-                // 传入配置路径
+        if(!isInit){
+            isInit = true;
+            conf.put("site","QisuuLa");
+            conf.put("start","1");
+            conf.put("store","FileStore");
+            for (String key : args){
+                String[] param = key.split("=",2);
+                if(param[0].startsWith("-config=")){
+                    // 传入配置路径
 
-            }else {
-                if(param.length > 1){
-                    conf.put(param[0],param[1]);
+                }else {
+                    if(param.length > 1){
+                        conf.put(param[0],param[1]);
+                    }
                 }
             }
         }
+
     }
 
 

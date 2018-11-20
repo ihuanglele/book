@@ -11,7 +11,7 @@ public class FileStore implements IStore {
 
     public boolean save(Book book) {
         for (Article article : book.getArticles()){
-            Tool.log(article.getChapterNo() + " : " + article.getTitle());
+//            Tool.log(article.getChapterNo() + " : " + article.getTitle());
         }
         return false;
     }
