@@ -15,6 +15,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Vector;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -67,7 +68,7 @@ public abstract class AbstractSite {
             throw new StopException(siteName + "InstantiationException -> " + e.getMessage());
         }
         site.bookId = bookId;
-        Tool.save("----开始执行"+bookId+"----","articleHref");
+        Tool.log("----开始执行"+bookId+"----");
         if(!site.isStop()){
             throw new StopException("stop crawl");
         }
@@ -79,8 +80,6 @@ public abstract class AbstractSite {
         Response chapterRes = page.getPage(site.getChapterUrl());
         Chapter chapter = site.getChapterPage(chapterRes);
         site.getBook().setChapter(chapter);
-
-        Arts arts = new Arts();
 
         for (Chapter.Link link : chapter.getLinks()){
             excutor.execute((new Thread() {
@@ -98,13 +97,18 @@ public abstract class AbstractSite {
                         if (null == article.getTitle()) {
                             article.setTitle(link.getTitle());
                         }
+                        article.setStatus("1");
                         log += "  -> success";
                     } catch (PageErrorException e) {
                         log += "  -> fail:" + e.getMessage();
+                        Tool.log("爬取页面错误  -> fail:" + e.getMessage());
+                        article.setChapterNo(link.getChapterNo());
+                        article.setTitle(link.getTitle());
+                        article.setStatus("0");
                     }finally {
                         Long t2 = (new Date()).getTime();
                         Tool.save((t2 - t1)/1000 + " " + log,"articleHref");
-                        arts.setArt(article);
+                        site.getBook().addArticle(article);
                     }
                 }
             }));
@@ -119,12 +123,7 @@ public abstract class AbstractSite {
                 Tool.log("sleep Error" + e.getMessage());
             }
         }while (excutor.getActiveCount() > 0);
-        site.getBook().setArticles(arts.getArticles());
-        arts.setLock();
-        if(chapter.getLinks().size() != arts.getArticles().size()){
-            Tool.log(bookId + " 一共章节："+chapter.getLinks().size()+"  抓取章节："+arts.getArticles().size());
-            chapter.printLinks();
-        }
+
         return site;
     }
 
@@ -253,30 +252,6 @@ public abstract class AbstractSite {
                 return url + href;
             }
         }
-    }
-
-}
-
-class Arts{
-    private ArrayList<Article> articles = new ArrayList<>();
-    private boolean isLock = false;
-
-    public void setArt(Article article){
-        if(!isLock){
-            articles.add(article);
-        }
-    }
-
-    public ArrayList<Article> getArticles(){
-        return articles;
-    }
-
-    public int getSize(){
-        return articles.size();
-    }
-
-    public void setLock(){
-        isLock = true;
     }
 
 }

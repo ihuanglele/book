@@ -19,6 +19,8 @@ public class Article {
     private String lastUpdateTime;
     // 章节号
     private String chapterNo;
+    // 状态
+    private String status;
 
     public String getUrl() {
         return url;
@@ -66,5 +68,13 @@ public class Article {
 
     public void setChapterNo(String chapterNo) {
         this.chapterNo = chapterNo;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

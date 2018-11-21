@@ -8,6 +8,8 @@ import okhttp3.Response;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
+import static java.lang.Thread.sleep;
+
 /**
  * Created by ihuanglele on 2018/11/8.
  */
@@ -23,10 +25,12 @@ public class GetHtmlPage {
     // 是否使用手机模式访问
     private boolean isMobile = false;
 
+    private static Integer times = 0;
+
     public GetHtmlPage() {
         client = new OkHttpClient.Builder()
                 .connectTimeout(5,TimeUnit.SECONDS)
-                .readTimeout(5,TimeUnit.SECONDS)
+                .readTimeout(30,TimeUnit.SECONDS)
                 .build();
     }
 
@@ -40,6 +44,14 @@ public class GetHtmlPage {
     }
 
     public Response getPage(String url) throws PageErrorException {
+        times++;
+        if(times > 10000){
+            try {
+                sleep(3000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
         this.url = url;
         Tool.save(url,"urls");
         return this.request();

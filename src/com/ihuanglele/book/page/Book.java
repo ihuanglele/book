@@ -30,7 +30,7 @@ public class Book {
 
     private String id;
     private Chapter chapter;
-    private ArrayList<Article> articles;
+    private ArrayList<Article> articles = new ArrayList<>();
 
     public Chapter getChapter() {
         return chapter;
@@ -43,6 +43,10 @@ public class Book {
 
     public ArrayList<Article> getArticles() {
         return articles;
+    }
+
+    public synchronized void addArticle(Article article){
+        articles.add(article);
     }
 
     public void setArticles(ArrayList<Article> articles) {
