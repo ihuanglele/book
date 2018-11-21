@@ -24,4 +24,6 @@ public class BookEntity extends Model<BookEntity> {
     public String album;
 
     public String url;
+
+    public Integer chapter_num;
 }

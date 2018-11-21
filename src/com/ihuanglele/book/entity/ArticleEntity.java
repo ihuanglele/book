@@ -31,4 +31,6 @@ public class ArticleEntity extends Model<ArticleEntity> {
     public String lastUpdateTime;
 
     public String url;
+
+    public String status;
 }

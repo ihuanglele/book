@@ -37,6 +37,7 @@ public class SqliteStore implements IStore {
                 articleEntity.content = article.getContent();
                 articleEntity.lastUpdateTime = article.getLastUpdateTime();
                 articleEntity.url = article.getUrl();
+                articleEntity.status = article.getStatus();
                 articleEntity.insert();
             }
         }
@@ -51,6 +52,7 @@ public class SqliteStore implements IStore {
         bookEntity.brief = book.getDesc();
         bookEntity.album = book.getAlbum();
         bookEntity.url = book.getUrl();
+        bookEntity.chapter_num = book.getChapter().getLinks().size();
         bookEntity.insert();
         return bookEntity;
     }
