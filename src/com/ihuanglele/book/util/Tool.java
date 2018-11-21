@@ -26,7 +26,10 @@ public class Tool extends TimerTask{
     // 打印到控制台
     public static void log(Object o){
         logInc++;
-        System.out.println("【"+logInc+"】 -> "+o);
+        if(logInc > 20000){
+            logInc = 0;
+        }
+        System.out.println("【"+logInc+"】 "+o);
     }
 
     // 待写入log buf
@@ -97,7 +100,6 @@ public class Tool extends TimerTask{
             isRuning = true;
         }
         autoSaveInc++;
-        log("autoWriteBuf -> " + autoSaveInc);
         for (String type : fileBufHashMap.keySet()) {
             String content = fileBufHashMap.get(type);
             if("".equals(content)){

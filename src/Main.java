@@ -1,7 +1,4 @@
 import com.ihuanglele.book.Runner;
-import com.ihuanglele.book.store.FileStore;
-import com.ihuanglele.book.store.IStore;
-import com.ihuanglele.book.store.SqliteStore;
 import com.ihuanglele.book.util.Config;
 import com.ihuanglele.book.util.Tool;
 

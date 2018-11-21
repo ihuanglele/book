@@ -27,6 +27,7 @@ public class Runner {
     public void run() {
         Boolean isRun = true;
         AbstractSite site = null;
+        Tool.log("Running -> siteName: "+siteName+" bookId: "+start+"  store: "+store.getClass());
         while (isRun){
             try {
                 site = AbstractSite.start(siteName,start);
@@ -70,7 +71,6 @@ public class Runner {
         try {
             c = Class.forName("com.ihuanglele.book.store." + Config.get("store"));
             setStore((IStore)c.newInstance());
-            Tool.log(Config.get("start"));
             run();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();

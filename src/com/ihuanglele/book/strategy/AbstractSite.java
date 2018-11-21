@@ -13,11 +13,8 @@ import org.jsoup.Jsoup;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.Vector;
-import java.util.concurrent.LinkedBlockingDeque;
-import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -35,7 +32,7 @@ public abstract class AbstractSite {
     protected String bookId;
     protected Boolean isMobile = false;
 
-    public static final ThreadPoolExecutor excutor = new ThreadPoolExecutor(100,Integer.MAX_VALUE,5, TimeUnit.SECONDS,new SynchronousQueue<>());
+    public static final ThreadPoolExecutor excutor = new ThreadPoolExecutor(200,Integer.MAX_VALUE,300, TimeUnit.SECONDS,new LinkedBlockingQueue<>());
 
     public void clean() {
         book = null;
@@ -68,7 +65,7 @@ public abstract class AbstractSite {
             throw new StopException(siteName + "InstantiationException -> " + e.getMessage());
         }
         site.bookId = bookId;
-        Tool.log("----开始执行"+bookId+"----");
+//        Tool.log("----开始执行"+bookId+"----");
         if(!site.isStop()){
             throw new StopException("stop crawl");
         }
@@ -102,12 +99,15 @@ public abstract class AbstractSite {
                     } catch (PageErrorException e) {
                         log += "  -> fail:" + e.getMessage();
                         Tool.log("爬取页面错误  -> fail:" + e.getMessage());
+                        if(null == article){
+                            article = new Article();
+                        }
                         article.setChapterNo(link.getChapterNo());
                         article.setTitle(link.getTitle());
                         article.setStatus("0");
                     }finally {
                         Long t2 = (new Date()).getTime();
-                        Tool.save((t2 - t1)/1000 + " " + log,"articleHref");
+//                        Tool.save((t2 - t1)/1000 + " " + log,"articleHref");
                         site.getBook().addArticle(article);
                     }
                 }
@@ -116,7 +116,7 @@ public abstract class AbstractSite {
 
         do {
             try {
-                Tool.log(bookId + " -> activeCount: "+ excutor.getActiveCount());
+//                Tool.log(bookId + " -> activeCount: "+ excutor.getActiveCount());
                 sleep(3000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
