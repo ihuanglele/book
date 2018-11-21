@@ -25,5 +25,6 @@ public class BookEntity extends Model<BookEntity> {
 
     public String url;
 
-    public Integer chapter_num;
+    @Column(name="chapter_num")
+    public String chapterNum;
 }

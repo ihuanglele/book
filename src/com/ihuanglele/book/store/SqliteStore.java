@@ -52,7 +52,7 @@ public class SqliteStore implements IStore {
         bookEntity.brief = book.getDesc();
         bookEntity.album = book.getAlbum();
         bookEntity.url = book.getUrl();
-        bookEntity.chapter_num = book.getChapter().getLinks().size();
+        bookEntity.chapterNum = String.valueOf(book.getChapter().getLinks().size());
         bookEntity.insert();
         return bookEntity;
     }
