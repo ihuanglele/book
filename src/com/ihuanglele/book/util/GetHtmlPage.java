@@ -73,9 +73,13 @@ public class GetHtmlPage {
             if(response.isSuccessful()){
                 return response;
             }else {
+                response.close();
                 throw new PageErrorException("response：ERROR -> " + url + " " + response.message());
             }
         } catch (IOException e) {
+            if(null != response){
+                response.close();
+            }
             throw new PageErrorException("response：IOException -> " + url + " " + e.getMessage());
         }
     }
